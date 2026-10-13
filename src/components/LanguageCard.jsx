@@ -2,23 +2,11 @@ import PropTypes from 'prop-types';
 import '../styles/LanguageCard.css';
 
 /**
- * Componente que muestra la tarjeta consumiendo directamente las propiedades
- * devueltas por la API de Rick and Morty.
- * 
- * @param {object} props - Propiedades recibidas de la API
- * @param {number} props.id - ID único del personaje
- * @param {string} props.name - Nombre del personaje
- * @param {string} props.status - Estado ('Alive', 'Dead', 'unknown')
- * @param {string} props.species - Especie ('Human', 'Alien', etc.)
- * @param {string} [props.type] - Subtipo o variante
- * @param {string} props.gender - Género ('Male', 'Female', etc.)
- * @param {object} props.origin - Objeto con datos de origen
- * @param {object} [props.location] - Objeto con la ubicación actual
- * @param {string} props.image - URL de la imagen del avatar
- * @param {string[]} [props.episode] - Array de URLs de episodios
- * @param {string} props.created - Fecha ISO de creación
+ * Componente de tarjeta de personaje.
+ * Consume directamente la estructura que responde la API de Rick and Morty
+ * y valida cada dato con PropTypes.
  */
-function CharacterCard({
+function LanguageCard({
   id,
   name,
   status,
@@ -31,64 +19,76 @@ function CharacterCard({
   episode,
   created,
 }) {
-  // Asignamos un color según el status que responde la API
-  const colorMap = {
-    Alive: '#10b981', // Verde esmeralda
-    Dead: '#ef4444',  // Rojo
-    unknown: '#6b7280', // Gris
+  // Configuración visual según el estado que devuelve la API
+  const statusConfig = {
+    Alive: { color: '#10b981', label: 'Vivo', dot: '🟢' },
+    Dead: { color: '#ef4444', label: 'Muerto', dot: '🔴' },
+    unknown: { color: '#9ca3af', label: 'Desconocido', dot: '⚪' },
   };
-  const cardColor = colorMap[status] || '#6366f1';
 
-  // Obtenemos el año formateado a partir del campo 'created' de la API
+  const currentStatus = statusConfig[status] || statusConfig.unknown;
   const anio = created ? new Date(created).getFullYear() : 'Desconocido';
 
   return (
-    <article className="card" style={{ '--card-color': cardColor }}>
-      {/* Encabezado con imagen/avatar y nombre devueltos por la API */}
-      <div className="card_header">
+    <article className="card" style={{ '--card-color': currentStatus.color }}>
+      {/* Contenedor de la imagen con efecto CSS transform al hover */}
+      <div className="card__image-wrapper">
         <img src={image} alt={name} className="card__image" loading="lazy" />
-        <div className="card__title-container">
-          <h2 className="card_tittle">{name}</h2>
-          <span className="card__id">#{id}</span>
+        <span className="card__id-badge">#{id}</span>
+        <span className="card__status-pill">
+          <span className="card__status-dot">{currentStatus.dot}</span>
+          {status}
+        </span>
+      </div>
+
+      {/* Contenido principal de la tarjeta */}
+      <div className="card__body">
+        <h2 className="card__title">{name}</h2>
+
+        <div className="card__meta-tags">
+          <span className="card__tag">🧬 {species}</span>
+          <span className="card__tag">⚧️ {gender}</span>
+          {type && <span className="card__tag">✨ {type}</span>}
+        </div>
+
+        {/* Detalles directos de la API */}
+        <div className="card__details">
+          <div className="card__detail-row">
+            <span className="card__detail-label">🌍 Origen:</span>
+            <span className="card__detail-val" title={origin?.name}>
+              {origin?.name || 'Desconocido'}
+            </span>
+          </div>
+
+          <div className="card__detail-row">
+            <span className="card__detail-label">📍 Ubicación:</span>
+            <span className="card__detail-val" title={location?.name}>
+              {location?.name || 'Desconocida'}
+            </span>
+          </div>
+
+          <div className="card__detail-row">
+            <span className="card__detail-label">🎬 Episodios:</span>
+            <span className="card__detail-val">
+              {episode?.length || 0} apariciones
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Badge con el 'status' exacto de la API */}
-      <span className="card_badge">{status}</span>
-
-      {/* Descripción construida con los campos de la API */}
-      <div className="card_description">
-        <p><strong>Especie:</strong> {species} {type ? `(${type})` : ''}</p>
-        <p><strong>Género:</strong> {gender}</p>
-        <p><strong>Origen:</strong> {origin?.name || 'Desconocido'}</p>
-        {location?.name && <p><strong>Ubicación:</strong> {location.name}</p>}
-        <p><strong>Episodios:</strong> {episode?.length || 0}</p>
-      </div>
-
-      {/* Pie con el año extraído del campo 'created' */}
-      <footer className="card_footer">
-        Creado en el {anio}
+      {/* Pie de tarjeta con año extraído del campo created */}
+      <footer className="card__footer">
+        📅 Creado en el {anio}
       </footer>
     </article>
   );
 }
 
 /**
- * PROPTYPES ADAPTADOS A LA RESPUESTA REAL DE LA API
- * 
- * Aquí validamos cada uno de los tipos de datos que la API entrega:
- * - id: number
- * - name: string
- * - status: string (específicamente 'Alive', 'Dead' o 'unknown')
- * - species: string
- * - gender: string
- * - image: string (URL)
- * - origin: objeto con name y url
- * - location: objeto con name y url
- * - episode: array de strings
- * - created: string en formato ISO
+ * VALIDACIÓN ESTRICTA CON PROPTYPES
+ * Valida directamente los campos tal como los devuelve la API
  */
-CharacterCard.propTypes = {
+LanguageCard.propTypes = {
   id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   status: PropTypes.oneOf(['Alive', 'Dead', 'unknown']).isRequired,
@@ -108,6 +108,5 @@ CharacterCard.propTypes = {
   created: PropTypes.string.isRequired,
 };
 
-// Exportamos también como LanguageCard para mantener compatibilidad
-export const LanguageCard = CharacterCard;
-export default CharacterCard;
+export const CharacterCard = LanguageCard;
+export default LanguageCard;

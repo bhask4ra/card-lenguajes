@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
-import CharacterCard from './components/LanguageCard';
+import LanguageCard from './components/LanguageCard';
 import FilterBar from './components/FilterBar';
-import { getCharacters } from './services/api';
+import { FALLBACK_CHARACTERS } from './data/fallbackData';
 import './App.css';
+
+const API_URL = 'https://rickandmortyapi.com/api/character';
 
 function App() {
   const [characters, setCharacters] = useState([]);
@@ -10,26 +12,26 @@ function App() {
   const [statusActivo, setStatusActivo] = useState('Todos');
 
   useEffect(() => {
-    async function loadData() {
-      setLoading(true);
-      try {
-        // Obtenemos los personajes directamente de la API de Rick and Morty
-        const data = await getCharacters();
-        setCharacters(data);
-      } catch (error) {
-        console.error('Error al consultar la API:', error);
-      } finally {
+    // Consumimos directamente la API con fetch
+    fetch(API_URL)
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        setCharacters(data.results || []);
         setLoading(false);
-      }
-    }
-
-    loadData();
+      })
+      .catch((err) => {
+        console.warn('Uso de respaldo por desconexión:', err.message);
+        setCharacters(FALLBACK_CHARACTERS);
+        setLoading(false);
+      });
   }, []);
 
-  // Obtenemos los estados únicos de los personajes devueltos por la API para los filtros
+  // Filtros dinámicos basados en los valores reales de 'status' de la API
   const estadosDisponibles = ['Todos', ...new Set(characters.map((c) => c.status))];
 
-  // Filtramos la lista según el estado seleccionado en FilterBar
   const personajesFiltrados =
     statusActivo === 'Todos'
       ? characters
@@ -38,14 +40,14 @@ function App() {
   return (
     <main>
       <header>
-        <h1>Consumo de API - Rick and Morty</h1>
+        <div className="badge-pill">Rick & Morty API</div>
+        <h1>Directorio de Personajes</h1>
         <p className="subtitle">
-          Tarjetas con validación estricta de <strong>PropTypes</strong> reflejando los campos directos de la API,
-          con efectos interactivos mediante <strong>CSS transform</strong> y filtros reactivos.
+          Consumo directo de API REST en React, validación con <strong>PropTypes</strong> y efectos visuales con <strong>CSS transform</strong>.
         </p>
       </header>
 
-      {/* Barra de filtros */}
+      {/* Barra de Filtros interactiva */}
       {characters.length > 0 && (
         <FilterBar
           tipos={estadosDisponibles}
@@ -54,17 +56,17 @@ function App() {
         />
       )}
 
-      {/* Feedback de carga */}
+      {/* Indicador de carga */}
       {loading ? (
         <div className="loading-box">
           <div className="spinner"></div>
-          <p>Consultando la API...</p>
+          <p>Cargando personajes desde la API...</p>
         </div>
       ) : (
         <section className="cards-grid">
           {personajesFiltrados.map((character) => (
-            /* Pasamos directamente las propiedades de la API, validadas con PropTypes */
-            <CharacterCard
+            /* Cada personaje se pasa directamente con los datos de la API */
+            <LanguageCard
               key={character.id}
               id={character.id}
               name={character.name}
