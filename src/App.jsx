@@ -43,9 +43,6 @@ function App() {
       <main>
         <header>
           <h1>Directorio de Personajes</h1>
-          <p className="subtitle">
-            Consumo directo de API, validación con <strong>PropTypes</strong> y efectos interactivos con <strong>CSS transform</strong>.
-          </p>
         </header>
 
         {/* Barra de Filtros interactiva con Fragment */}
