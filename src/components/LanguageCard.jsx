@@ -1,10 +1,11 @@
+import { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import '../styles/LanguageCard.css';
 
 /**
  * Componente de tarjeta de personaje.
- * Consume directamente la estructura devuelta por la API de Rick and Morty
- * sin emojis, con diseño profesional y validación mediante PropTypes.
+ * Consume directamente la estructura de la API, usando Fragments (<> ... </>)
+ * exactamente como en el proyecto de ejemplo.
  */
 function LanguageCard({
   id,
@@ -19,7 +20,6 @@ function LanguageCard({
   episode,
   created,
 }) {
-  // Configuración de colores según el estado que devuelve la API
   const statusColors = {
     Alive: '#10b981', // Verde
     Dead: '#ef4444',  // Rojo
@@ -31,65 +31,67 @@ function LanguageCard({
 
   return (
     <article className="card" style={{ '--card-color': cardColor }}>
-      {/* Contenedor de la imagen con efecto CSS transform al hover */}
-      <div className="card__image-wrapper">
-        <img src={image} alt={name} className="card__image" loading="lazy" />
-        <span className="card__id-badge">ID #{id}</span>
-        
-        {/* Píldora de estado con indicador de color circular mediante CSS puro */}
-        <span className="card__status-pill">
-          <span className="card__status-dot"></span>
-          {status}
-        </span>
-      </div>
-
-      {/* Contenido principal de la tarjeta */}
-      <div className="card__body">
-        <h2 className="card__title">{name}</h2>
-
-        {/* Etiquetas de especie y género sin emojis */}
-        <div className="card__meta-tags">
-          <span className="card__tag">{species}</span>
-          <span className="card__tag">{gender}</span>
-          {type && <span className="card__tag">{type}</span>}
+      {/* Fragment para el encabezado con imagen y estado */}
+      <>
+        <div className="card__image-wrapper">
+          <img src={image} alt={name} className="card__image" loading="lazy" />
+          <span className="card__id-badge">ID #{id}</span>
+          
+          <span className="card__status-pill">
+            <span className="card__status-dot"></span>
+            {status}
+          </span>
         </div>
+      </>
 
-        {/* Detalles directos de la respuesta de la API */}
-        <div className="card__details">
-          <div className="card__detail-row">
-            <span className="card__detail-label">Origen:</span>
-            <span className="card__detail-val" title={origin?.name}>
-              {origin?.name || 'Desconocido'}
-            </span>
+      {/* Fragment para el cuerpo y los datos de la API */}
+      <>
+        <div className="card__body">
+          <h2 className="card__title">{name}</h2>
+
+          <div className="card__meta-tags">
+            <span className="card__tag">{species}</span>
+            <span className="card__tag">{gender}</span>
+            {type && <span className="card__tag">{type}</span>}
           </div>
 
-          <div className="card__detail-row">
-            <span className="card__detail-label">Ubicación:</span>
-            <span className="card__detail-val" title={location?.name}>
-              {location?.name || 'Desconocida'}
-            </span>
-          </div>
+          <div className="card__details">
+            <div className="card__detail-row">
+              <span className="card__detail-label">Origen:</span>
+              <span className="card__detail-val" title={origin?.name}>
+                {origin?.name || 'Desconocido'}
+              </span>
+            </div>
 
-          <div className="card__detail-row">
-            <span className="card__detail-label">Episodios:</span>
-            <span className="card__detail-val">
-              {episode?.length || 0} apariciones
-            </span>
+            <div className="card__detail-row">
+              <span className="card__detail-label">Ubicación:</span>
+              <span className="card__detail-val" title={location?.name}>
+                {location?.name || 'Desconocida'}
+              </span>
+            </div>
+
+            <div className="card__detail-row">
+              <span className="card__detail-label">Episodios:</span>
+              <span className="card__detail-val">
+                {episode?.length || 0} apariciones
+              </span>
+            </div>
           </div>
         </div>
-      </div>
+      </>
 
-      {/* Pie de tarjeta con año extraído de la propiedad 'created' */}
-      <footer className="card__footer">
-        Creado en el {anio}
-      </footer>
+      {/* Fragment para el pie de la tarjeta, idéntico al proyecto de ejemplo */}
+      <>
+        <footer className="card__footer">
+          Creado en el {anio}
+        </footer>
+      </>
     </article>
   );
 }
 
 /**
  * VALIDACIÓN ESTRICTA CON PROPTYPES
- * Valida directamente los campos recibidos de la API
  */
 LanguageCard.propTypes = {
   id: PropTypes.number.isRequired,
