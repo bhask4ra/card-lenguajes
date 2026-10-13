@@ -3,8 +3,8 @@ import '../styles/LanguageCard.css';
 
 /**
  * Componente de tarjeta de personaje.
- * Consume directamente la estructura que responde la API de Rick and Morty
- * y valida cada dato con PropTypes.
+ * Consume directamente la estructura devuelta por la API de Rick and Morty
+ * sin emojis, con diseño profesional y validación mediante PropTypes.
  */
 function LanguageCard({
   id,
@@ -19,24 +19,26 @@ function LanguageCard({
   episode,
   created,
 }) {
-  // Configuración visual según el estado que devuelve la API
-  const statusConfig = {
-    Alive: { color: '#10b981', label: 'Vivo', dot: '🟢' },
-    Dead: { color: '#ef4444', label: 'Muerto', dot: '🔴' },
-    unknown: { color: '#9ca3af', label: 'Desconocido', dot: '⚪' },
+  // Configuración de colores según el estado que devuelve la API
+  const statusColors = {
+    Alive: '#10b981', // Verde
+    Dead: '#ef4444',  // Rojo
+    unknown: '#9ca3af', // Gris
   };
 
-  const currentStatus = statusConfig[status] || statusConfig.unknown;
+  const cardColor = statusColors[status] || '#6366f1';
   const anio = created ? new Date(created).getFullYear() : 'Desconocido';
 
   return (
-    <article className="card" style={{ '--card-color': currentStatus.color }}>
+    <article className="card" style={{ '--card-color': cardColor }}>
       {/* Contenedor de la imagen con efecto CSS transform al hover */}
       <div className="card__image-wrapper">
         <img src={image} alt={name} className="card__image" loading="lazy" />
-        <span className="card__id-badge">#{id}</span>
+        <span className="card__id-badge">ID #{id}</span>
+        
+        {/* Píldora de estado con indicador de color circular mediante CSS puro */}
         <span className="card__status-pill">
-          <span className="card__status-dot">{currentStatus.dot}</span>
+          <span className="card__status-dot"></span>
           {status}
         </span>
       </div>
@@ -45,30 +47,31 @@ function LanguageCard({
       <div className="card__body">
         <h2 className="card__title">{name}</h2>
 
+        {/* Etiquetas de especie y género sin emojis */}
         <div className="card__meta-tags">
-          <span className="card__tag">🧬 {species}</span>
-          <span className="card__tag">⚧️ {gender}</span>
-          {type && <span className="card__tag">✨ {type}</span>}
+          <span className="card__tag">{species}</span>
+          <span className="card__tag">{gender}</span>
+          {type && <span className="card__tag">{type}</span>}
         </div>
 
-        {/* Detalles directos de la API */}
+        {/* Detalles directos de la respuesta de la API */}
         <div className="card__details">
           <div className="card__detail-row">
-            <span className="card__detail-label">🌍 Origen:</span>
+            <span className="card__detail-label">Origen:</span>
             <span className="card__detail-val" title={origin?.name}>
               {origin?.name || 'Desconocido'}
             </span>
           </div>
 
           <div className="card__detail-row">
-            <span className="card__detail-label">📍 Ubicación:</span>
+            <span className="card__detail-label">Ubicación:</span>
             <span className="card__detail-val" title={location?.name}>
               {location?.name || 'Desconocida'}
             </span>
           </div>
 
           <div className="card__detail-row">
-            <span className="card__detail-label">🎬 Episodios:</span>
+            <span className="card__detail-label">Episodios:</span>
             <span className="card__detail-val">
               {episode?.length || 0} apariciones
             </span>
@@ -76,9 +79,9 @@ function LanguageCard({
         </div>
       </div>
 
-      {/* Pie de tarjeta con año extraído del campo created */}
+      {/* Pie de tarjeta con año extraído de la propiedad 'created' */}
       <footer className="card__footer">
-        📅 Creado en el {anio}
+        Creado en el {anio}
       </footer>
     </article>
   );
@@ -86,7 +89,7 @@ function LanguageCard({
 
 /**
  * VALIDACIÓN ESTRICTA CON PROPTYPES
- * Valida directamente los campos tal como los devuelve la API
+ * Valida directamente los campos recibidos de la API
  */
 LanguageCard.propTypes = {
   id: PropTypes.number.isRequired,
