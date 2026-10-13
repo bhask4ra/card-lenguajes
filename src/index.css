@@ -29,78 +29,8 @@ body {
 #root {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 2rem 1.5rem 5rem;
+  padding: 2.5rem 1.5rem 5rem;
   text-align: center;
-}
-
-/* Barra superior PWA */
-.header-top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-}
-
-.badge-pill {
-  display: inline-block;
-  padding: 0.35rem 0.9rem;
-  background-color: #ede9fe;
-  color: #6366f1;
-  font-size: 0.8rem;
-  font-weight: 700;
-  border-radius: 999px;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-}
-
-.status-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.3rem 0.75rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.status-indicator.online {
-  background-color: #ecfdf5;
-  color: #065f46;
-  border: 1px solid #a7f3d0;
-}
-
-.status-indicator.offline {
-  background-color: #fef2f2;
-  color: #991b1b;
-  border: 1px solid #fecaca;
-}
-
-.indicator-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background-color: currentColor;
-}
-
-.install-pwa-btn {
-  padding: 0.4rem 1rem;
-  background-color: var(--primary);
-  color: #ffffff;
-  border: none;
-  border-radius: 999px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
-}
-
-.install-pwa-btn:hover {
-  transform: translateY(-2px);
-  background-color: #4338ca;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
 }
 
 h1 {

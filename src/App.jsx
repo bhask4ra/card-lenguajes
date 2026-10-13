@@ -10,28 +10,9 @@ function App() {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusActivo, setStatusActivo] = useState('Todos');
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [canInstall, setCanInstall] = useState(false);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    // 1. Detección de conectividad online/offline para PWA
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    // 2. Soporte para instalación de PWA (botón Instalar)
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setCanInstall(true);
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-
-    // 3. Carga directa de la API (con soporte de Service Worker / Fallback)
+    // Carga directa de la API (con soporte de Service Worker PWA / Fallback)
     fetch(API_URL)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -46,23 +27,7 @@ function App() {
         setCharacters(FALLBACK_CHARACTERS);
         setLoading(false);
       });
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    };
   }, []);
-
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setCanInstall(false);
-    }
-    setDeferredPrompt(null);
-  };
 
   // Filtros dinámicos basados en los valores reales de 'status' de la API
   const estadosDisponibles = ['Todos', ...new Set(characters.map((c) => c.status))];
@@ -77,28 +42,9 @@ function App() {
     <>
       <main>
         <header>
-          {/* Fragment para la barra de estado y botón de instalación PWA */}
-          <>
-            <div className="header-top-bar">
-              <span className="badge-pill">Rick & Morty PWA</span>
-              
-              <span className={`status-indicator ${isOnline ? 'online' : 'offline'}`}>
-                <span className="indicator-dot"></span>
-                {isOnline ? 'En línea' : 'Modo Offline (Caché)'}
-              </span>
-
-              {canInstall && (
-                <button type="button" className="install-pwa-btn" onClick={handleInstallClick}>
-                  Instalar App
-                </button>
-              )}
-            </div>
-          </>
-
           <h1>Directorio de Personajes</h1>
           <p className="subtitle">
-            PWA instalable con soporte sin conexión, consumo directo de API, <strong>Fragments</strong>,{' '}
-            <strong>PropTypes</strong> y efectos interactivos con <strong>CSS transform</strong>.
+            Consumo directo de API, validación con <strong>PropTypes</strong> y efectos interactivos con <strong>CSS transform</strong>.
           </p>
         </header>
 
