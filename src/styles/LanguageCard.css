@@ -1,24 +1,35 @@
+/* ==========================================================================
+   ESTILOS DE LA TARJETA (CARD) Y USO DE CSS TRANSFORM
+   ========================================================================== */
+
 .card {
   background: #ffffff;
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  /* Transform y transición exactamente igual que card-lenguajes */
+
+  /* TRANSICIÓN: Permite que el CSS transform y el box-shadow sean suaves */
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   text-align: left;
-  /* El borde superior usa el color del item (pasado como variable CSS --card-color) */
+
+  /* Borde superior usando la variable CSS generada según el estado del personaje */
   border-top: 5px solid var(--card-color, #ccc);
   position: relative;
   overflow: hidden;
 }
 
-/* Efecto hover con CSS transform translateY */
+/* --------------------------------------------------------------------------
+   USO 1 DE TRANSFORM (Efecto de elevación en la tarjeta al pasar el ratón)
+   - transform: translateY(-6px);
+   Desplaza la tarjeta 6 píxeles hacia arriba en el eje Y, simulando que flota.
+   -------------------------------------------------------------------------- */
 .card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
 }
 
 /* ── Encabezado de la tarjeta ─────────────────────────────────────── */
@@ -26,46 +37,60 @@
 .card_header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-}
-
-.card__emoji,
-.card_emoji {
-  font-size: 2rem;
-  line-height: 1;
+  gap: 0.85rem;
 }
 
 .card__image {
-  width: 52px;
-  height: 52px;
+  width: 58px;
+  height: 58px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--card-color, #ccc);
-  transition: transform 0.3s ease;
+  flex-shrink: 0;
+
+  /* TRANSICIÓN para el transform de la imagen */
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Transform adicional al pasar el ratón por la imagen */
+/* --------------------------------------------------------------------------
+   USO 2 DE TRANSFORM (Efecto en la imagen al hacer hover sobre la tarjeta)
+   - transform: scale(1.1) rotate(4deg);
+   Aumenta el tamaño un 10% (scale) y la gira levemente 4 grados (rotate).
+   -------------------------------------------------------------------------- */
 .card:hover .card__image {
   transform: scale(1.1) rotate(4deg);
+}
+
+.card__title-container {
+  display: flex;
+  flex-direction: column;
 }
 
 .card__title,
 .card_title,
 .card_tittle {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #1a1a2e;
+  color: #111827;
   margin: 0;
+  line-height: 1.25;
 }
 
-/* ── Badge de tipo ────────────────────────────────────────────────── */
+.card__id {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ── Badge de tipo / status ───────────────────────────────────────── */
 .card__badge,
 .card_badge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   background-color: var(--card-color, #ccc);
   color: #ffffff;
   width: fit-content;
@@ -73,13 +98,21 @@
   letter-spacing: 0.5px;
 }
 
-/* ── Descripción ──────────────────────────────────────────────────── */
+/* ── Descripción / Detalles de la API ─────────────────────────────── */
 .card__description,
 .card_description {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: #555555;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #4b5563;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin: 0.25rem 0;
+}
+
+.card__description p,
+.card_description p {
   margin: 0;
 }
 
@@ -87,8 +120,8 @@
 .card__footer,
 .card_footer {
   font-size: 0.8rem;
-  color: #888888;
-  border-top: 1px solid #f0f0f0;
+  color: #9ca3af;
+  border-top: 1px solid #f3f4f6;
   padding-top: 0.75rem;
   margin-top: auto;
 }

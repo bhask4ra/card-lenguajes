@@ -1,27 +1,23 @@
 import { useState, useEffect } from 'react';
-import LanguageCard from './components/LanguageCard';
+import CharacterCard from './components/LanguageCard';
 import FilterBar from './components/FilterBar';
 import { getCharacters } from './services/api';
-import { transformCharacterList } from './utils/transform';
 import './App.css';
 
 function App() {
-  const [items, setItems] = useState([]);
+  const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tipoActivo, setTipoActivo] = useState('Todos');
+  const [statusActivo, setStatusActivo] = useState('Todos');
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       try {
-        // 1. Obtenemos datos de la API externa
-        const rawData = await getCharacters();
-
-        // 2. Transformamos los datos al formato requerido por LanguageCard (Data Transform)
-        const transformedData = transformCharacterList(rawData);
-        setItems(transformedData);
+        // Obtenemos los personajes directamente de la API de Rick and Morty
+        const data = await getCharacters();
+        setCharacters(data);
       } catch (error) {
-        console.error('Error al cargar datos:', error);
+        console.error('Error al consultar la API:', error);
       } finally {
         setLoading(false);
       }
@@ -30,60 +26,65 @@ function App() {
     loadData();
   }, []);
 
-  // Extraemos los tipos/estados únicos para la FilterBar
-  const tiposDisponibles = ['Todos', ...new Set(items.map((item) => item.tipo))];
+  // Obtenemos los estados únicos de los personajes devueltos por la API para los filtros
+  const estadosDisponibles = ['Todos', ...new Set(characters.map((c) => c.status))];
 
-  // Filtramos la lista según el tipo activo seleccionado
-  const itemsFiltrados =
-    tipoActivo === 'Todos'
-      ? items
-      : items.filter((item) => item.tipo === tipoActivo);
+  // Filtramos la lista según el estado seleccionado en FilterBar
+  const personajesFiltrados =
+    statusActivo === 'Todos'
+      ? characters
+      : characters.filter((c) => c.status === statusActivo);
 
   return (
     <main>
       <header>
-        <h1>Tarjetas con Consumo de API</h1>
+        <h1>Consumo de API - Rick and Morty</h1>
         <p className="subtitle">
-          Consumiendo la API de Rick and Morty, implementando <strong>PropTypes</strong>,{' '}
-          <strong>transformación de datos</strong> y efectos de <strong>CSS transform</strong> en hover.
+          Tarjetas con validación estricta de <strong>PropTypes</strong> reflejando los campos directos de la API,
+          con efectos interactivos mediante <strong>CSS transform</strong> y filtros reactivos.
         </p>
       </header>
 
-      {/* Barra de Filtros con validación de PropTypes */}
-      {items.length > 0 && (
+      {/* Barra de filtros */}
+      {characters.length > 0 && (
         <FilterBar
-          tipos={tiposDisponibles}
-          tipoActivo={tipoActivo}
-          onSeleccionar={setTipoActivo}
+          tipos={estadosDisponibles}
+          tipoActivo={statusActivo}
+          onSeleccionar={setStatusActivo}
         />
       )}
 
-      {/* Estado de Carga */}
+      {/* Feedback de carga */}
       {loading ? (
         <div className="loading-box">
           <div className="spinner"></div>
-          <p>Cargando datos desde la API...</p>
+          <p>Consultando la API...</p>
         </div>
       ) : (
         <section className="cards-grid">
-          {itemsFiltrados.map((item) => (
-            <LanguageCard
-              key={item.id}
-              nombre={item.nombre}
-              anio={item.anio}
-              tipo={item.tipo}
-              descripcion={item.descripcion}
-              emoji={item.emoji}
-              color={item.color}
-              imagen={item.imagen}
+          {personajesFiltrados.map((character) => (
+            /* Pasamos directamente las propiedades de la API, validadas con PropTypes */
+            <CharacterCard
+              key={character.id}
+              id={character.id}
+              name={character.name}
+              status={character.status}
+              species={character.species}
+              type={character.type}
+              gender={character.gender}
+              origin={character.origin}
+              location={character.location}
+              image={character.image}
+              episode={character.episode}
+              created={character.created}
             />
           ))}
         </section>
       )}
 
-      {!loading && itemsFiltrados.length === 0 && (
+      {!loading && personajesFiltrados.length === 0 && (
         <div className="empty-box">
-          <p>No se encontraron tarjetas para el filtro seleccionado.</p>
+          <p>No se encontraron personajes para el filtro seleccionado.</p>
         </div>
       )}
     </main>
