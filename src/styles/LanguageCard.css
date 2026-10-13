@@ -1,0 +1,94 @@
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  /* Transform y transición exactamente igual que card-lenguajes */
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: left;
+  /* El borde superior usa el color del item (pasado como variable CSS --card-color) */
+  border-top: 5px solid var(--card-color, #ccc);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto hover con CSS transform translateY */
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Encabezado de la tarjeta ─────────────────────────────────────── */
+.card__header,
+.card_header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.card__emoji,
+.card_emoji {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.card__image {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--card-color, #ccc);
+  transition: transform 0.3s ease;
+}
+
+/* Transform adicional al pasar el ratón por la imagen */
+.card:hover .card__image {
+  transform: scale(1.1) rotate(4deg);
+}
+
+.card__title,
+.card_title,
+.card_tittle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+/* ── Badge de tipo ────────────────────────────────────────────────── */
+.card__badge,
+.card_badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: var(--card-color, #ccc);
+  color: #ffffff;
+  width: fit-content;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Descripción ──────────────────────────────────────────────────── */
+.card__description,
+.card_description {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #555555;
+  flex: 1;
+  margin: 0;
+}
+
+/* ── Pie de la tarjeta ────────────────────────────────────────────── */
+.card__footer,
+.card_footer {
+  font-size: 0.8rem;
+  color: #888888;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 0.75rem;
+  margin-top: auto;
+}
