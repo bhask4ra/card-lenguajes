@@ -10,9 +10,28 @@ function App() {
   const [characters, setCharacters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusActivo, setStatusActivo] = useState('Todos');
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [canInstall, setCanInstall] = useState(false);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    // Consumimos directamente la API con fetch
+    // 1. Detección de conectividad online/offline
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // 2. Soporte para instalación de PWA (botón Instalar)
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setCanInstall(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    // 3. Carga de datos de la API (con soporte de Service Worker / Fallback)
     fetch(API_URL)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP error ${res.status}`);
@@ -23,11 +42,27 @@ function App() {
         setLoading(false);
       })
       .catch((err) => {
-        console.warn('Uso de respaldo por desconexión:', err.message);
+        console.warn('Conexión remota no disponible, usando respaldo offline:', err.message);
         setCharacters(FALLBACK_CHARACTERS);
         setLoading(false);
       });
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setCanInstall(false);
+    }
+    setDeferredPrompt(null);
+  };
 
   // Filtros dinámicos basados en los valores reales de 'status' de la API
   const estadosDisponibles = ['Todos', ...new Set(characters.map((c) => c.status))];
@@ -40,10 +75,26 @@ function App() {
   return (
     <main>
       <header>
-        <div className="badge-pill">Rick & Morty API</div>
+        <div className="header-top-bar">
+          <span className="badge-pill">Rick & Morty PWA</span>
+          
+          {/* Indicador de estado de conexión */}
+          <span className={`status-indicator ${isOnline ? 'online' : 'offline'}`}>
+            <span className="indicator-dot"></span>
+            {isOnline ? 'En línea' : 'Modo Offline (Caché)'}
+          </span>
+
+          {/* Botón de instalación PWA cuando el navegador lo permite */}
+          {canInstall && (
+            <button type="button" className="install-pwa-btn" onClick={handleInstallClick}>
+              Instalar App
+            </button>
+          )}
+        </div>
+
         <h1>Directorio de Personajes</h1>
         <p className="subtitle">
-          Consumo directo de API REST en React, validación con <strong>PropTypes</strong> y efectos visuales con <strong>CSS transform</strong>.
+          PWA instalable con soporte sin conexión, consumo de API, validación estricta con <strong>PropTypes</strong> y efectos interactivos con <strong>CSS transform</strong>.
         </p>
       </header>
 
@@ -65,7 +116,6 @@ function App() {
       ) : (
         <section className="cards-grid">
           {personajesFiltrados.map((character) => (
-            /* Cada personaje se pasa directamente con los datos de la API */
             <LanguageCard
               key={character.id}
               id={character.id}
