@@ -14,6 +14,19 @@ export function useCharacteres(page){
         async function loadCharacters(){
             setLoading(true);
             setError(null);
+            const cacheKey = `rm_characters_page_${page}`;
+            const cached = localStorage.getItem(cacheKey);
+            if(cached){
+                try{
+                    const saved = JSON.parse(cached);
+                    setCharacters(saved.results);
+                    setTotalPages(saved.pages);
+                    setLoading(false);
+                    return;
+                }catch{
+                    localStorage.removeItem(cacheKey);
+                }
+            }
             try{
                 const response = await fetch(`${API_URL}?page=${page}`,
                 {signal: controller.signal,});
@@ -23,6 +36,7 @@ export function useCharacteres(page){
                 const data = await response.json();
                 setCharacters(data.results);
                 setTotalPages(data.info.pages);
+                localStorage.setItem(cacheKey, JSON.stringify({results: data.results, pages: data.info.pages}));
             }catch(err){
                 if(err.name !== "AbortError"){
                     setError(err.message);
