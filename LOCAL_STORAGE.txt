@@ -1,0 +1,1 @@
+El local storage se usa para guardar la pagina en la que te quedaste y los personajes que ya viste, asi la pagina carga mas rapido y recuerda donde ibas.
