@@ -1,11 +1,15 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import LanguageCard from './components/LanguageCard';
 import Pagination from './components/Pagination';
 import { useCharacteres } from './useCharacteres';
 
 function App() {
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(() => Number(localStorage.getItem('rm_page')) || 1)
+
+  useEffect(() => {
+    localStorage.setItem('rm_page', String(page))
+  }, [page])
   const { characters, totalPages, loading, error } = useCharacteres(page);
 
   const statusColors = {
