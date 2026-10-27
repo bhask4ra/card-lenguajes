@@ -1,55 +1,49 @@
-import { useState, useEffect } from 'react'
 import './App.css'
-import LanguageCard from './components/LanguageCard';
-import Pagination from './components/Pagination';
-import { useCharacteres } from './useCharacteres';
+import { useAuth } from './auth/AuthContext'
+import { Link, NavLink, Route, Routes } from 'react-router-dom'
+import Inicio from './pages/Inicio'
+import Personajes from './pages/Personajes'
+import PersonajeDetalle from './pages/PersonajeDetalle'
+import Login from './pages/Login'
+import Perfil from './pages/Perfil'
+import NoEncontrada from './pages/NoEncontrada'
+import RutaPrivada from './auth/RutaPrivada'
 
 function App() {
-  const [page, setPage] = useState(() => Number(localStorage.getItem('rm_page')) || 1)
-
-  useEffect(() => {
-    localStorage.setItem('rm_page', String(page))
-  }, [page])
-  const { characters, totalPages, loading, error } = useCharacteres(page);
-
-  const statusColors = {
-    Alive: '#10b981',
-    Dead: '#ef4444',
-    unknown: '#9ca3af',
-  };
-  const statusEmojis = {
-    Alive: '🟢',
-    Dead: '💀',
-    unknown: '❓',
-  };
+  const { autenticado, usuario, logout } = useAuth()
 
   return (
-    <main className="app">
-      <h1>Rick and Morty</h1>
-      {loading && <p>Cargando ....</p>}
-      {error && <p role="alert"> ocurrio un error {error}</p>}
+    <div>
+      <nav>
+        <NavLink to="/">Inicio</NavLink>
+        <NavLink to="/personajes">Personajes</NavLink>
+        <NavLink to="/perfil">Perfil</NavLink>
+        {autenticado ? (
+          <>
+            <span>Hola {usuario}</span>
+            <button onClick={logout}>Cerrar sesión</button>
+          </>
+        ) : (
+          <Link to="/login">Iniciar sesión</Link>
+        )}
+      </nav>
 
-      <section className="cards-grid">
-        {characters.map((character) => (
-          <LanguageCard
-            key={character.id}
-            nombre={character.name}
-            anio={new Date(character.created).getFullYear()}
-            tipo={character.status}
-            descripcion={`${character.species} • ${character.gender} • Origen: ${character.origin?.name ?? 'Desconocido'}`}
-            emoji={statusEmojis[character.status] ?? '❓'}
-            color={statusColors[character.status] ?? '#6366f1'}
-          />
-        ))}
-      </section>
-
-      <Pagination
-        page={page}
-        totalPage={totalPages}
-        onPrev={() => setPage((p) => p - 1)}
-        onNext={() => setPage((p) => p + 1)}
-      />
-    </main>
+      <Routes>
+        <Route path="/" element={<Inicio />} />
+        <Route path="/personajes" element={<Personajes />} />
+        <Route path="/personajes/:id" element={<PersonajeDetalle />} />
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/perfil"
+          element={
+            <RutaPrivada>
+              <Perfil />
+            </RutaPrivada>
+          }
+        />
+        <Route path="*" element={<NoEncontrada />} />
+      </Routes>
+    </div>
   )
 }
 
